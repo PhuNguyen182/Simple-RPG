@@ -28,10 +28,13 @@ namespace SimpleRPG.Scripts.Gameplay.GameEntities.Characters.Player
 
         private void PlayerMove()
         {
-            if (playerInput.IsMouseClicked && GameUtils.ScreenToRay(_mainCamera, out _groundHitInfo, layerMask: groundMask))
+            if (playerInput.IsMousePressed && GameUtils.ScreenToRay(_mainCamera, out _groundHitInfo, layerMask: groundMask))
             {
+                playerAgent.isStopped = false;
                 playerAgent.SetDestination(_groundHitInfo.point);
             }
+            else
+                playerAgent.isStopped = true;
 
             playerAnimation.PlayMovement(playerAgent.velocity.magnitude / playerAgent.speed);
         }
