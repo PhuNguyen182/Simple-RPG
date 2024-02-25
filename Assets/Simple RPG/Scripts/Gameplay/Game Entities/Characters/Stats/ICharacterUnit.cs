@@ -6,7 +6,9 @@ namespace SimpleRPG.Scripts.Gameplay.GameEntities.Characters.Stats
 {
     public interface ICharacterUnit
     {
-        public int Health { get; set; }
+        public int Health { get; }
         public int MaxHealth { get; }
+
+        public void SetMaxHealth(int health);
     }
 }
