@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 using SimpleRPG.Scripts.Utils;
-using SimpleRPG.Scripts.Gameplay.GameEntities.Characters.Stats;
+using SimpleRPG.Scripts.Gameplay.GameEntities.Characters.Stats.Interfaces;
 
 namespace SimpleRPG.Scripts.Gameplay.GameEntities.Characters.Player
 {
@@ -35,6 +35,16 @@ namespace SimpleRPG.Scripts.Gameplay.GameEntities.Characters.Player
             playerAnimation.PlayMovement(playerAgent.velocity.magnitude / playerAgent.speed);
         }
 
+        public void RotateToward(Transform targetPoint)
+        {
+            float stepToward = playerAgent.angularSpeed * Time.deltaTime;
+            Vector3 direction = targetPoint.position - transform.position;
+            Vector3 rotation = Vector3.RotateTowards(transform.forward, direction, stepToward, 0);
+            
+            Quaternion toward = Quaternion.LookRotation(rotation);
+            transform.rotation = Quaternion.Slerp(transform.rotation, toward, 25f * Time.deltaTime);
+        }
+
         private void MoveCheck()
         {
             if(_calculatedPath.status == NavMeshPathStatus.PathComplete)
@@ -44,7 +54,7 @@ namespace SimpleRPG.Scripts.Gameplay.GameEntities.Characters.Player
                 _calculatedPath.ClearCorners();
             }
 
-            if(GameUtils.ScreenToRay(_mainCamera, out _groundHitInfo, layerMask: groundMask))
+            if(GameUtils.ScreenToRay(_mainCamera, out _groundHitInfo, 100f, groundMask))
             {
                 NavMeshHit navMeshHit;
                 Vector3 point = _groundHitInfo.point;
@@ -62,7 +72,7 @@ namespace SimpleRPG.Scripts.Gameplay.GameEntities.Characters.Player
             }
         }
 
-        private void StopAgent()
+        public void StopAgent()
         {
             playerAgent.ResetPath();
             playerAgent.velocity = Vector3.zero;
